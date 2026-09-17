@@ -1,0 +1,242 @@
+/* Recommendation Results Page Styling - Light-First System */
+.rec-container {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.rec-header-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.summary-chip {
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-subtle);
+  transition: border-color var(--transition-fast);
+}
+
+.summary-chip:hover {
+  border-color: var(--primary-500);
+}
+
+.summary-chip-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.summary-chip-val {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-600);
+}
+
+/* Eligibility Status Section */
+.status-section {
+  margin-bottom: var(--space-8);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.status-card {
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-subtle);
+}
+
+.status-card.eligible {
+  background: var(--emerald-50);
+  border-color: var(--border-emerald);
+}
+
+.status-card.ineligible {
+  background: var(--rose-50);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.status-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.reason-bullet {
+  font-size: 0.88rem;
+  color: var(--text-body);
+  margin-top: 6px;
+  padding-left: 4px;
+}
+
+/* Hero Rank 1 Best Recommendation Spotlight */
+.hero-rec-card {
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  background: var(--bg-surface);
+  border: 2px solid var(--primary-600);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card-hover);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-badge-ribbon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--primary-600);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+.score-display-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: var(--space-5) 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-dark);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.score-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  flex-shrink: 0;
+}
+
+.score-bar-bg {
+  flex: 1;
+  height: 10px;
+  background: var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-600), var(--emerald-600));
+  border-radius: 10px;
+  transition: width 1s ease-out;
+}
+
+/* Feature Details Grid */
+.rec-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-6) 0;
+}
+
+.rec-feature-item {
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-dark);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.rec-feature-title {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.rec-feature-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 2px;
+}
+
+/* Grounded Why Recommended & Conditions */
+.rec-bullets-list {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: var(--text-body);
+}
+
+.bullet-icon-check {
+  color: var(--emerald-600);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Alternatives Cards (Rank 2, Rank 3) */
+.alt-recs-title {
+  font-size: 1.2rem;
+  color: var(--text-main);
+  margin: var(--space-8) 0 var(--space-4) 0;
+}
+
+.alt-card {
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.alt-card:hover {
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Official Disclaimer Box */
+.disclaimer-box {
+  margin-top: var(--space-10);
+  padding: var(--space-5) var(--space-6);
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--amber-500);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}

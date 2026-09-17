@@ -1,0 +1,59 @@
+/* Geo Locator Styling (SCA / District Welfare Offices) - Light Theme System */
+.geo-container {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.geo-search-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.agency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.agency-card {
+  padding: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+}
+
+.agency-card:hover {
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.agency-state-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--bg-light-blue);
+  color: var(--primary-600);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.agency-name {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.agency-contact-info {
+  font-size: 0.88rem;
+  color: var(--text-body);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

@@ -1,0 +1,86 @@
+/* EMI Calculator Styling - Light Theme System */
+.emi-container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.emi-card {
+  padding: 32px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+}
+
+@media (max-width: 768px) {
+  .emi-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+.range-slider-group {
+  margin-bottom: 24px;
+}
+
+.range-slider-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.range-slider-header label {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.range-slider-val {
+  font-weight: 700;
+  color: var(--primary-600);
+}
+
+.slider-input {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 5px;
+  outline: none;
+  accent-color: var(--primary-600);
+  cursor: pointer;
+}
+
+.emi-result-panel {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.emi-amount-large {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-600);
+  margin: 8px 0;
+}
+
+.emi-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.emi-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}

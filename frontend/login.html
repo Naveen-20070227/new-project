@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yojana.ai — Beneficiary Login & Registration</title>
+  <meta name="description" content="AI-assisted government loan scheme recommendation platform for beneficiaries.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="glass-panel auth-box fade-in">
+
+      <!-- Back to Home Link -->
+      <div style="margin-bottom: 20px;">
+        <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; transition: color 0.2s ease;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Back to Home
+        </a>
+      </div>
+
+      <div class="auth-header">
+        <div class="brand-badge">
+          <div class="brand-logo-icon">
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <span>YOJANA<span style="color: var(--emerald-400);">.AI</span></span>
+        </div>
+        <p class="auth-subtitle">AI Government Loan Scheme Platform for Beneficiaries</p>
+      </div>
+
+      <!-- Auth Mode Switch Tabs -->
+      <div class="auth-tabs">
+        <button id="tab-register" class="auth-tab-btn active" onclick="switchAuthTab('register')">Register Beneficiary</button>
+        <button id="tab-login" class="auth-tab-btn" onclick="switchAuthTab('login')">Beneficiary Login</button>
+      </div>
+
+      <div id="auth-error-alert" class="alert alert-danger" style="display: none;"></div>
+
+      <!-- Step 1: Mobile & Name Input -->
+      <div id="request-otp-step">
+        <div id="group-beneficiary-name" class="form-group">
+          <label class="form-label" for="auth-name">Beneficiary Full Name <span class="req">*</span></label>
+          <input type="text" id="auth-name" class="form-control" placeholder="Enter your full name as per Aadhaar">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="auth-mobile">Mobile Number (Mobile + OTP) <span class="req">*</span></label>
+          <input type="tel" id="auth-mobile" class="form-control" placeholder="10-digit mobile number (e.g. 9876543210)" maxlength="10">
+        </div>
+
+        <button id="auth-submit-btn" class="btn btn-emerald btn-full" onclick="handleRequestOtp()">
+          Request OTP & Register
+        </button>
+      </div>
+
+      <!-- Step 2: OTP Verification -->
+      <div id="otp-step-container" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="auth-otp">Enter 6-Digit OTP <span class="req">*</span></label>
+          <input type="text" id="auth-otp" class="form-control" placeholder="Enter 6-digit OTP" maxlength="6" style="letter-spacing: 0.3em; font-size: 1.2rem; text-align: center; font-weight: 700;">
+        </div>
+
+        <!-- Dev Mode OTP Display Helper -->
+        <div id="dev-otp-display" class="dev-otp-box" style="display: none;">
+          <span>Dev Mode OTP Code:</span>
+          <span id="dev-otp-code" class="dev-otp-code">------</span>
+        </div>
+
+        <div id="resend-timer-text" class="otp-countdown"></div>
+
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+          <button id="verify-otp-btn" class="btn btn-emerald btn-full" onclick="handleVerifyAndSubmit()">
+            Verify OTP & Proceed
+          </button>
+          <button id="resend-otp-btn" class="btn btn-outline btn-full btn-sm" onclick="handleRequestOtp()">
+            Resend OTP
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; text-align: center; font-size: 0.78rem; color: var(--text-dim);">
+        Protected by Zero-Trust Mobile + OTP Passwordless Authentication.<br>
+        Designed for Beneficiaries.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

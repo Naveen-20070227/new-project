@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yojana.ai — Beneficiary Platform</title>
+  <meta name="description" content="AI Government Loan Scheme Recommender Platform for SC Beneficiaries">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/schemes.css">
+  <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/eligibility.css">
+  <link rel="stylesheet" href="css/recommendation.css">
+  <link rel="stylesheet" href="css/emi.css">
+  <link rel="stylesheet" href="css/geo.css">
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- Sidebar Navigation (yojana.ai brand without logo symbol) -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">yojana<span style="color: var(--emerald-400);">.ai</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a id="nav-btn-schemes" class="nav-item active" onclick="switchView('schemes-view')">
+          <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          All Schemes
+        </a>
+        <a id="nav-btn-eligibility" class="nav-item" onclick="switchView('eligibility-view')">
+          <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 20 11-18 0 9 9 0 0118 0z"></path></svg>
+          Check Eligibility
+        </a>
+        <a id="nav-btn-emi" class="nav-item" onclick="switchView('emi-view')">
+          <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          EMI Calculator
+        </a>
+        <a id="nav-btn-geo" class="nav-item" onclick="switchView('geo-view')">
+          <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          Geo Locator
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+
+      <!-- Top Navbar (Requirement 2: Clicking profile navigates to full Profile page) -->
+      <header class="top-navbar">
+        <h2 id="nav-page-title" class="nav-page-title">All Schemes</h2>
+
+        <div class="navbar-right">
+          <button class="user-profile-btn" onclick="switchView('profile-view')">
+            <div id="nav-avatar-char" class="avatar-circle">U</div>
+            <span id="nav-user-name" style="font-weight: 600; font-size: 0.9rem;">Beneficiary</span>
+            <span class="badge badge-sc" style="font-size: 0.65rem;">Verified</span>
+          </button>
+
+          <button class="btn btn-outline btn-sm" onclick="handleLogout()">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <main class="content-container">
+
+        <!-- VIEW 1: ALL SCHEMES VIEW -->
+        <section id="schemes-view" class="app-view">
+          <div class="schemes-header">
+            <div>
+              <h1 style="font-size: 1.5rem; color: var(--text-main);">Official Government Loan Schemes</h1>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Browse official concessional credit schemes for beneficiaries.</p>
+            </div>
+            
+            <div class="schemes-filter-bar">
+              <button id="filter-chip-all" class="filter-chip active" onclick="filterSchemes('ALL')">All Schemes</button>
+              <button id="filter-chip-business" class="filter-chip" onclick="filterSchemes('BUSINESS')">Business Loans</button>
+              <button id="filter-chip-education" class="filter-chip" onclick="filterSchemes('EDUCATION')">Education Loans</button>
+            </div>
+          </div>
+
+          <div id="schemes-grid-container" class="schemes-grid"></div>
+        </section>
+
+
+        <!-- VIEW 2: FULL SEPARATE SCHEME DETAIL PAGE (Requirement 1) -->
+        <section id="scheme-detail-view" class="app-view" style="display: none;">
+          <div id="scheme-detail-content" style="max-width: 950px; margin: 0 auto;"></div>
+        </section>
+
+
+        <!-- VIEW 3: FULL SEPARATE PROFILE PAGE (Requirements 2, 3, 4) -->
+        <section id="profile-view" class="app-view" style="display: none;">
+          <div style="max-width: 900px; margin: 0 auto;">
+            <!-- Beneficiary Details (Read-only by default with Edit button) -->
+            <div id="profile-view-content"></div>
+
+            <!-- Latest Scheme Recommendation Section -->
+            <div id="profile-latest-recommendation-container"></div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 4: CHECK ELIGIBILITY VIEW (Requirements 5, 6, 7) -->
+        <section id="eligibility-view" class="app-view" style="display: none;">
+          <div class="eligibility-container">
+
+            <!-- Profile Summary Box -->
+            <div id="eligibility-profile-summary"></div>
+
+            <div id="eligibility-error-alert" class="alert alert-danger" style="display: none;"></div>
+
+            <form onsubmit="handleCheckEligibilitySubmit(event)" class="glass-panel" style="padding: 32px;">
+              
+              <!-- 1. Financial Requirements (Requirement 5: Continuous numerical input with step="any") -->
+              <div style="margin-bottom: 28px;">
+                <div class="form-section-title">
+                  <span class="step-num">1</span>
+                  <span>Financial Requirements</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                  <div class="form-group">
+                    <label class="form-label">Annual Family Income (₹) <span class="req">*</span></label>
+                    <input type="number" id="input-income" class="form-control" placeholder="e.g. 250000" min="1" step="any" required onwheel="this.blur()">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Required Loan Amount (₹) <span class="req">*</span></label>
+                    <input type="number" id="input-amount-req" class="form-control" placeholder="e.g. 120000" min="1" step="any" required onwheel="this.blur()">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" id="cost-field-label">Total Unit / Course Cost (₹) <span class="req">*</span></label>
+                    <input type="number" id="input-cost" class="form-control" placeholder="e.g. 135000" min="1" step="any" required onwheel="this.blur()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Loan Type Selection -->
+              <div style="margin-bottom: 28px;">
+                <div class="form-section-title">
+                  <span class="step-num">2</span>
+                  <span>Select Loan Type</span>
+                </div>
+
+                <div class="loan-type-selector">
+                  <div id="card-loan-business" class="loan-type-card selected" onclick="selectLoanType('Business')">
+                    <input type="radio" id="radio-business" name="loan-type-radio" class="loan-type-radio" checked>
+                    <div class="loan-type-text">
+                      <h4>Business Loan</h4>
+                      <p>Micro-finance, term loans & enterprise units</p>
+                    </div>
+                  </div>
+
+                  <div id="card-loan-education" class="loan-type-card" onclick="selectLoanType('Education')">
+                    <input type="radio" id="radio-education" name="loan-type-radio" class="loan-type-radio">
+                    <div class="loan-type-text">
+                      <h4>Education Loan</h4>
+                      <p>Full-time professional & technical courses</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Dynamic Section: Business Loan Form -->
+              <div id="business-form-section" style="margin-bottom: 28px;">
+                <div class="form-section-title">
+                  <span class="step-num">3</span>
+                  <span>Business Loan Details</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                  <div class="form-group">
+                    <label class="form-label">Business Purpose <span class="req">*</span></label>
+                    <input type="text" id="input-business-purpose" class="form-control" placeholder="e.g. Dairy Farming, Grocery Store, Transport Vehicle">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Unit Status <span class="req">*</span></label>
+                    <select id="input-business-unit" class="form-select">
+                      <option value="New">New Project Unit</option>
+                      <option value="Expanding">Expanding Existing Business</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Business Description</label>
+                  <textarea id="input-business-desc" class="form-control" rows="3" placeholder="Briefly describe the business plan, equipment needed, or operational location..."></textarea>
+                </div>
+              </div>
+
+              <!-- 4. Dynamic Section: Education Loan Form -->
+              <div id="education-form-section" style="margin-bottom: 28px; display: none;">
+                <div class="form-section-title">
+                  <span class="step-num">3</span>
+                  <span>Education Course Details</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                  <div class="form-group">
+                    <label class="form-label">Course Name <span class="req">*</span></label>
+                    <input type="text" id="input-course-name" class="form-control" placeholder="e.g. B.Tech Computer Science, MBBS, MBA">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">College / Institution Name <span class="req">*</span></label>
+                    <input type="text" id="input-college-name" class="form-control" placeholder="e.g. IIT Bombay, State Medical College">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Course Duration (Years) <span class="req">*</span></label>
+                    <input type="number" id="input-course-years" class="form-control" placeholder="e.g. 4" min="1" max="8" value="4" onwheel="this.blur()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Check Eligibility Button -->
+              <button id="btn-check-eligibility" type="submit" class="btn btn-emerald btn-full" style="padding: 16px; font-size: 1.05rem;">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                CHECK ELIGIBILITY
+              </button>
+            </form>
+          </div>
+        </section>
+
+
+        <!-- VIEW 5: RECOMMENDATION RESULTS VIEW -->
+        <section id="recommendation-results-view" class="app-view" style="display: none;">
+          <div class="rec-container">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+              <h1 style="font-size: 1.5rem; color: var(--text-main);">Scheme Recommendation Results</h1>
+              <button class="btn btn-outline btn-sm" onclick="switchView('eligibility-view')">
+                ← Back to Check Form
+              </button>
+            </div>
+
+            <div id="recommendation-results-content"></div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 6: EMI CALCULATOR VIEW -->
+        <section id="emi-view" class="app-view" style="display: none;">
+          <div class="emi-container">
+            <div style="margin-bottom: 28px;">
+              <h1 style="font-size: 1.5rem; color: var(--text-main);">Loan Repayment EMI Calculator</h1>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate quarterly & monthly instalments based on government scheme interest rates.</p>
+            </div>
+
+            <div class="glass-panel emi-card">
+              <div>
+                <div class="range-slider-group">
+                  <div class="range-slider-header">
+                    <label>Loan Amount Required</label>
+                    <span id="val-emi-amount" class="range-slider-val">₹1,25,000</span>
+                  </div>
+                  <input type="range" id="emi-amount-slider" class="slider-input" min="10000" max="4000000" step="5000" value="125000" oninput="updateEmiCalculations()">
+                </div>
+
+                <div class="range-slider-group">
+                  <div class="range-slider-header">
+                    <label>Beneficiary Interest Rate (% p.a.)</label>
+                    <span id="val-emi-rate" class="range-slider-val">6.5%</span>
+                  </div>
+                  <input type="range" id="emi-rate-slider" class="slider-input" min="4.0" max="16.0" step="0.5" value="6.5" oninput="updateEmiCalculations()">
+                </div>
+
+                <div class="range-slider-group">
+                  <div class="range-slider-header">
+                    <label>Repayment Tenure (Years)</label>
+                    <span id="val-emi-tenure" class="range-slider-val">3 Years</span>
+                  </div>
+                  <input type="range" id="emi-tenure-slider" class="slider-input" min="1" max="12" step="1" value="3" oninput="updateEmiCalculations()">
+                </div>
+              </div>
+
+              <div class="emi-result-panel">
+                <div>
+                  <div style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Quarterly Instalment (Every 3 Months)</div>
+                  <div id="res-emi-quarterly" class="emi-amount-large">₹11,624</div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted);">Equivalent Monthly: <span id="res-emi-monthly" style="color: var(--text-main); font-weight: 600;">₹3,875</span></div>
+                </div>
+
+                <div class="emi-stats-list">
+                  <div class="emi-stat-row">
+                    <span style="color: var(--text-muted);">Total Interest Payable</span>
+                    <span id="res-total-interest" style="color: var(--amber-500); font-weight: 700;">₹14,500</span>
+                  </div>
+                  <div class="emi-stat-row">
+                    <span style="color: var(--text-muted);">Total Amount Payable</span>
+                    <span id="res-total-payment" style="color: var(--text-main); font-weight: 700;">₹1,39,500</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEW 7: GEO LOCATOR VIEW -->
+        <section id="geo-view" class="app-view" style="display: none;">
+          <div class="geo-container">
+            <div style="margin-bottom: 28px;">
+              <h1 style="font-size: 1.5rem; color: var(--text-main);">State Channelising Agencies (SCAs) Locator</h1>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Find State Development Corporation head offices and district welfare centres across India.</p>
+            </div>
+
+            <div class="geo-search-bar">
+              <input type="text" id="geo-search-input" class="form-control" placeholder="Search by State name or Corporation office..." oninput="renderGeoLocatorPage(this.value)">
+            </div>
+
+            <div id="geo-agencies-container" class="agency-grid"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+
+  <!-- JS Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/schemes.js"></script>
+  <script src="js/eligibility.js"></script>
+  <script src="js/recommendation.js"></script>
+  <script src="js/emi.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
