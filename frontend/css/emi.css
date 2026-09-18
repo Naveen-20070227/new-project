@@ -1,86 +1,260 @@
-/* EMI Calculator Styling - Light Theme System */
-.emi-container {
-  max-width: 960px;
-  margin: 0 auto;
+/* New NSFDC Scheme-driven EMI Calculator Styling */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+.emi-view-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 40px;
 }
 
-.emi-card {
-  padding: 32px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 36px;
+.calculator-container {
+  width: 100%;
+  max-width: 580px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e1ecfa;
+  box-shadow: 0 12px 36px rgba(37, 99, 235, 0.08);
+  overflow: hidden;
+  position: relative;
+  font-family: 'Nunito', sans-serif;
 }
 
-@media (max-width: 768px) {
-  .emi-card {
-    grid-template-columns: 1fr;
-  }
+.calculator-card {
+  padding: 32px 36px;
 }
 
-.range-slider-group {
-  margin-bottom: 24px;
+.calc-title {
+  color: #0c1a4b;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  font-family: 'Nunito', sans-serif;
 }
 
-.range-slider-header {
+.title-divider {
+  border: 0;
+  height: 1px;
+  background: #eef2fa;
+  margin-bottom: 25px;
+}
+
+.calculator-card .form-group {
+  margin-bottom: 25px;
+}
+
+.calculator-card .form-group > label, 
+.calculator-card .slider-header label {
+  display: block;
+  color: #4b5563;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Custom Dropdown */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-selected {
+  background: #f7f9fd;
+  border: 1px solid #d4e0f9;
+  border-radius: 8px;
+  padding: 12px 15px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
+  align-items: center;
+  cursor: pointer;
+  color: #6b7280;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
-.range-slider-header label {
-  color: var(--text-main);
+.dropdown-selected:hover {
+  border-color: #3b82f6;
+}
+
+.dropdown-selected svg {
+  transition: transform 0.3s ease;
+}
+
+.custom-dropdown.active .dropdown-selected svg {
+  transform: rotate(180deg);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e1ecfa;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 20;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.custom-dropdown.active .dropdown-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-option {
+  padding: 12px 15px;
+  cursor: pointer;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover {
+  background: #f0f5ff;
+  color: #2563eb;
+}
+
+/* Sliders */
+.slider-group {
+  margin-top: 28px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.input-with-symbol {
+  display: flex;
+  align-items: center;
+  color: #0c1a4b;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.input-with-symbol input {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0c1a4b;
+  width: 110px;
+  text-align: right;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.symbol {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.tenure-input {
+  display: flex;
+  align-items: center;
+}
+
+.tenure-input input {
+  width: 44px;
+}
+
+.tenure-select {
+  border: none;
+  background: transparent;
+  color: #0c1a4b;
+  font-size: 18px;
+  font-weight: 800;
+  outline: none;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  margin-left: 5px;
+  appearance: none;
+}
+
+.custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  background: #c3d7f9;
+  border-radius: 3px;
+  outline: none;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2563eb;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+}
+
+.custom-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2563eb;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+}
+
+.custom-slider:disabled {
+  opacity: 0.6;
+}
+.custom-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+/* Footer Results */
+.results-footer {
+  background: #2563eb;
+  display: flex;
+  justify-content: space-between;
+  padding: 24px 20px;
+  color: white;
+  border-top: 1px solid #1d4ed8;
+}
+
+.result-box {
+  text-align: center;
+  flex: 1;
+}
+
+.result-value {
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.result-label {
+  font-size: 12px;
+  color: #dbeafe;
   font-weight: 600;
 }
 
-.range-slider-val {
-  font-weight: 700;
-  color: var(--primary-600);
-}
-
-.slider-input {
-  width: 100%;
-  height: 6px;
-  background: var(--border-color);
-  border-radius: 5px;
-  outline: none;
-  accent-color: var(--primary-600);
-  cursor: pointer;
-}
-
-.emi-result-panel {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.emi-amount-large {
-  font-family: var(--font-heading);
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--primary-600);
-  margin: 8px 0;
-}
-
-.emi-stats-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 20px;
-}
-
-.emi-stat-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color);
+.results-footer .divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.25);
+  margin: 0 10px;
 }

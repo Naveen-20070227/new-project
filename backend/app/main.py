@@ -75,6 +75,13 @@ app.include_router(recommendations_router, prefix=settings.API_V1_STR)
 app.include_router(emi_router, prefix=settings.API_V1_STR)
 app.include_router(geo_router, prefix=settings.API_V1_STR)
 
+from backend.app.api.emi import calculate_emi_post, CalculationRequest
+
+@app.post("/api/calculate")
+def calculate_alias_post(data: CalculationRequest):
+    return calculate_emi_post(data)
+
+
 # Serve Frontend static files if frontend directory exists (mounted last)
 frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
 if os.path.exists(frontend_path):

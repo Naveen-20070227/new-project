@@ -246,55 +246,83 @@
 
         <!-- VIEW 6: EMI CALCULATOR VIEW -->
         <section id="emi-view" class="app-view" style="display: none;">
-          <div class="emi-container">
-            <div style="margin-bottom: 28px;">
-              <h1 style="font-size: 1.5rem; color: var(--text-main);">Loan Repayment EMI Calculator</h1>
-              <p style="color: var(--text-muted); font-size: 0.9rem;">Calculate quarterly & monthly instalments based on government scheme interest rates.</p>
-            </div>
-
-            <div class="glass-panel emi-card">
-              <div>
-                <div class="range-slider-group">
-                  <div class="range-slider-header">
-                    <label>Loan Amount Required</label>
-                    <span id="val-emi-amount" class="range-slider-val">₹1,25,000</span>
+          <div class="emi-view-wrapper">
+            <div class="calculator-container">
+              <div class="calculator-card">
+                <h1 class="calc-title">Calculate your EMI</h1>
+                <hr class="title-divider">
+                
+                <!-- Scheme Selection Dropdown -->
+                <div class="form-group">
+                  <label>Choose the scheme</label>
+                  <div class="custom-dropdown" id="schemeDropdown">
+                    <div class="dropdown-selected" id="dropdownSelected">
+                      <span>Select a scheme</span>
+                      <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1L7 7L13 1" stroke="#0B1A50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="dropdown-options" id="dropdownOptions">
+                      <!-- Options populated dynamically from API -->
+                    </div>
                   </div>
-                  <input type="range" id="emi-amount-slider" class="slider-input" min="10000" max="4000000" step="5000" value="125000" oninput="updateEmiCalculations()">
                 </div>
 
-                <div class="range-slider-group">
-                  <div class="range-slider-header">
-                    <label>Beneficiary Interest Rate (% p.a.)</label>
-                    <span id="val-emi-rate" class="range-slider-val">6.5%</span>
+                <!-- Loan Capital Amount Slider -->
+                <div class="form-group slider-group">
+                  <div class="slider-header">
+                    <label>How much capital do you want?</label>
+                    <div class="input-with-symbol">
+                      <span class="symbol">₹</span>
+                      <input type="text" id="amountInput" value="2,00,000">
+                    </div>
                   </div>
-                  <input type="range" id="emi-rate-slider" class="slider-input" min="4.0" max="16.0" step="0.5" value="6.5" oninput="updateEmiCalculations()">
+                  <input type="range" id="amountSlider" min="10000" max="5000000" step="5000" value="200000" class="custom-slider">
                 </div>
 
-                <div class="range-slider-group">
-                  <div class="range-slider-header">
-                    <label>Repayment Tenure (Years)</label>
-                    <span id="val-emi-tenure" class="range-slider-val">3 Years</span>
+                <!-- Rate of Interest (Tied to Scheme) -->
+                <div class="form-group slider-group">
+                  <div class="slider-header">
+                    <label>Rate of interest (p.a.)</label>
+                    <div class="input-with-symbol">
+                      <input type="text" id="interestInput" value="6.5" readonly style="color: #666; cursor: not-allowed;">
+                      <span class="symbol">%</span>
+                    </div>
                   </div>
-                  <input type="range" id="emi-tenure-slider" class="slider-input" min="1" max="12" step="1" value="3" oninput="updateEmiCalculations()">
+                  <input type="range" id="interestSlider" min="1" max="20" step="0.1" value="6.5" class="custom-slider" disabled>
+                </div>
+
+                <!-- Tenure Slider & Unit Switch -->
+                <div class="form-group slider-group">
+                  <div class="slider-header">
+                    <label>Tenure</label>
+                    <div class="input-with-symbol tenure-input">
+                      <input type="text" id="tenureInput" value="36">
+                      <select id="tenureType" class="tenure-select">
+                        <option value="months">months</option>
+                        <option value="years">years</option>
+                      </select>
+                    </div>
+                  </div>
+                  <input type="range" id="tenureSlider" min="1" max="144" step="1" value="36" class="custom-slider">
                 </div>
               </div>
-
-              <div class="emi-result-panel">
-                <div>
-                  <div style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Quarterly Instalment (Every 3 Months)</div>
-                  <div id="res-emi-quarterly" class="emi-amount-large">₹11,624</div>
-                  <div style="font-size: 0.85rem; color: var(--text-muted);">Equivalent Monthly: <span id="res-emi-monthly" style="color: var(--text-main); font-weight: 600;">₹3,875</span></div>
+              
+              <!-- Results Footer Panel -->
+              <div class="results-footer">
+                <div class="result-box">
+                  <div class="result-value" id="emiValue">₹ 0</div>
+                  <div class="result-label">Monthly EMI</div>
                 </div>
-
-                <div class="emi-stats-list">
-                  <div class="emi-stat-row">
-                    <span style="color: var(--text-muted);">Total Interest Payable</span>
-                    <span id="res-total-interest" style="color: var(--amber-500); font-weight: 700;">₹14,500</span>
-                  </div>
-                  <div class="emi-stat-row">
-                    <span style="color: var(--text-muted);">Total Amount Payable</span>
-                    <span id="res-total-payment" style="color: var(--text-main); font-weight: 700;">₹1,39,500</span>
-                  </div>
+                <div class="divider"></div>
+                <div class="result-box">
+                  <div class="result-value" id="totalInterestValue">₹ 0</div>
+                  <div class="result-label">Total Interest</div>
+                </div>
+                <div class="divider"></div>
+                <div class="result-box">
+                  <div class="result-value" id="totalPayableValue">₹ 0</div>
+                  <div class="result-label">Total payable</div>
                 </div>
               </div>
             </div>
