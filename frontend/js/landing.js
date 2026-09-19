@@ -39,6 +39,17 @@
           navToggle.setAttribute("aria-expanded", "false");
         });
       });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener("click", function (e) {
+      if (mobilePanel && mobilePanel.classList.contains("open")) {
+        if (!mobilePanel.contains(e.target) && !navToggle.contains(e.target)) {
+          mobilePanel.classList.remove("open");
+          navToggle.classList.remove("open");
+          navToggle.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
   }
 
   /* ---------- Smooth Anchor Link Scroll ---------- */

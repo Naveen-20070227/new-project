@@ -99,3 +99,39 @@
   font-weight: 700;
   color: var(--primary-600);
 }
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 640px) {
+  .schemes-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .schemes-filter-bar {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-chip {
+    white-space: nowrap;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+  }
+
+  .schemes-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .scheme-card {
+    padding: 18px;
+  }
+
+  .scheme-meta-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}

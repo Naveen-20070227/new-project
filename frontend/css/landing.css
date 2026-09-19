@@ -552,7 +552,15 @@ img, svg {
   justify-content: center;
   background: rgba(241, 245, 249, 0.9);
   border: 1px solid rgba(203, 213, 225, 0.8);
-  border-radius: 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+}
+
+.nav-toggle:hover {
+  background: #FFFFFF;
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 .nav-toggle span,
@@ -578,49 +586,94 @@ img, svg {
 .mobile-panel {
   position: absolute;
   top: calc(100% + 8px);
-  left: 16px;
-  right: 16px;
+  left: 0;
+  right: 0;
+  width: 100%;
   border-radius: 20px;
-  padding: 16px 20px 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   transform: translateY(-10px);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: transform .3s var(--ease), opacity .3s var(--ease);
-  z-index: 999;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 1001;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border: 1px solid rgba(203, 213, 225, 0.7) !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16) !important;
+  box-sizing: border-box;
 }
 
 .mobile-panel.open {
   transform: translateY(0);
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 
 .mobile-panel a.mobile-link {
-  padding: 12px 10px;
-  font-size: 15.5px;
-  font-weight: 500;
-  color: var(--text-muted-dark);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.4);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.mobile-panel a.mobile-link .link-arrow {
+  color: #94a3b8;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.mobile-panel a.mobile-link:last-of-type {
+  border-bottom: none;
 }
 
 .mobile-panel a.mobile-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-on-dark);
+  background: rgba(99, 102, 241, 0.08);
+  color: #4F46E5;
+}
+
+.mobile-panel a.mobile-link:hover .link-arrow {
+  color: #4F46E5;
+  transform: translateX(3px);
 }
 
 .mobile-panel .mobile-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-top: 14px;
-  padding-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(203, 213, 225, 0.5);
 }
 
 .mobile-panel .mobile-actions .btn {
   flex: 1;
+  text-align: center;
+  padding: 11px 18px;
+  font-size: 0.9rem;
+}
+
+.mobile-panel .mobile-actions .btn-ghost {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0F172A;
+  font-weight: 600;
+}
+
+.mobile-panel .mobile-actions .btn-primary {
+  background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
 }
 
 .desktop-actions {
@@ -1660,15 +1713,15 @@ section {
 /* TAB & SMALL DESKTOP (<= 1024px) */
 @media (max-width: 1024px) {
   .nav-links {
-    display: none;
+    display: none !important;
   }
 
   .desktop-actions {
-    display: none;
+    display: none !important;
   }
 
   .nav-toggle {
-    display: flex;
+    display: flex !important;
   }
 
   .wrap {
@@ -1676,7 +1729,8 @@ section {
   }
 
   .nav-inner {
-    padding: 0 24px;
+    padding: 0 20px;
+    height: 60px;
   }
 
   /* Services: 1x3 for Tab */
@@ -1721,11 +1775,38 @@ section {
 /* MOBILE VIEW (<= 640px) */
 @media (max-width: 640px) {
   :root {
-    --navh: 70px;
+    --navh: 64px;
   }
 
   .navbar-wrapper {
-    top: 0;
+    top: 8px;
+    padding: 0 12px;
+  }
+
+  .nav-inner {
+    padding: 0 12px;
+    height: 56px;
+    gap: 10px;
+  }
+
+  .brand {
+    font-size: 24px;
+  }
+
+  .lang-select {
+    padding: 5px 22px 5px 8px;
+    font-size: 12px;
+  }
+
+  .nav-toggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-panel {
+    left: 12px;
+    right: 12px;
+    padding: 14px;
   }
 
   .announcement-bar {

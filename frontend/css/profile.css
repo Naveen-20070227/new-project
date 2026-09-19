@@ -85,3 +85,20 @@
   font-weight: 600;
   color: var(--text-main);
 }
+
+@media (max-width: 640px) {
+  .profile-header-card {
+    padding: 20px 16px;
+  }
+
+  .profile-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .profile-details-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

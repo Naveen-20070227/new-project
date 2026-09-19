@@ -56,34 +56,72 @@ function initEmiDropdown() {
   });
   emiSchemes = uniqueSchemes;
 
-  emiSchemes.forEach(scheme => {
+  if (emiSchemes.length === 0) {
+    fallbackEmiSchemes();
+  }
+
+  emiSchemes.forEach((scheme, index) => {
     const option = document.createElement('div');
     option.classList.add('dropdown-option');
-    option.textContent = scheme.name;
+    if (selectedEmiScheme && (selectedEmiScheme.id === scheme.id || selectedEmiScheme.name === scheme.name)) {
+      option.classList.add('selected');
+    }
+
+    option.innerHTML = `
+      <span>${scheme.name}</span>
+      <span style="font-size: 0.75rem; background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 12px; font-weight: 700; white-space: nowrap; margin-left: 8px;">${scheme.rate}% p.a.</span>
+    `;
+
     option.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       selectEmiScheme(scheme);
       dropdown.classList.remove('active');
+      const fg = dropdown.closest('.form-group');
+      if (fg) fg.classList.remove('dropdown-group-active');
     });
     dropdownOptions.appendChild(option);
   });
 
+  // Toggle dropdown on header click
   dropdownSelected.onclick = (e) => {
-    dropdown.classList.toggle('active');
+    e.preventDefault();
     e.stopPropagation();
+    const isActive = dropdown.classList.toggle('active');
+    const fg = dropdown.closest('.form-group');
+    if (fg) {
+      if (isActive) {
+        fg.classList.add('dropdown-group-active');
+      } else {
+        fg.classList.remove('dropdown-group-active');
+      }
+    }
   };
 
-  document.onclick = () => {
-    dropdown.classList.remove('active');
-  };
+  // Global click to close dropdown when clicking outside
+  if (!window.emiDropdownGlobalClickAttached) {
+    document.addEventListener('click', (e) => {
+      const activeDropdown = document.getElementById('schemeDropdown');
+      if (activeDropdown && !activeDropdown.contains(e.target)) {
+        activeDropdown.classList.remove('active');
+        const fg = activeDropdown.closest('.form-group');
+        if (fg) fg.classList.remove('dropdown-group-active');
+      }
+    });
+    window.emiDropdownGlobalClickAttached = true;
+  }
 
   if (emiSchemes.length > 0 && !selectedEmiScheme) {
     selectEmiScheme(emiSchemes[0]);
+  } else if (selectedEmiScheme) {
+    selectEmiScheme(selectedEmiScheme);
   }
 }
 
 function selectEmiScheme(scheme) {
+  if (!scheme) return;
   selectedEmiScheme = scheme;
+
   const dropdownSelected = document.getElementById('dropdownSelected');
   const interestInput = document.getElementById('interestInput');
   const interestSlider = document.getElementById('interestSlider');
@@ -91,13 +129,26 @@ function selectEmiScheme(scheme) {
   if (dropdownSelected) {
     const span = dropdownSelected.querySelector('span');
     if (span) {
-      span.textContent = scheme.name;
+      span.textContent = `${scheme.name} (${scheme.rate}% p.a.)`;
       span.style.color = '#0c1a4b';
     }
   }
 
   if (interestInput) interestInput.value = scheme.rate;
   if (interestSlider) interestSlider.value = scheme.rate;
+
+  // Highlight active option in options list
+  const dropdownOptions = document.getElementById('dropdownOptions');
+  if (dropdownOptions) {
+    const options = dropdownOptions.querySelectorAll('.dropdown-option');
+    options.forEach((opt, idx) => {
+      if (emiSchemes[idx] && (emiSchemes[idx].id === scheme.id || emiSchemes[idx].name === scheme.name)) {
+        opt.classList.add('selected');
+      } else {
+        opt.classList.remove('selected');
+      }
+    });
+  }
 
   calculateEMI();
 }

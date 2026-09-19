@@ -1,139 +1,390 @@
-/* Geo Locator — Directory of State Channelising Agencies (SCAs) */
+/* Geo Locator Map & Navigation Engine — Interactive Leaflet Integration */
 
-const SCA_DIRECTORY_FALLBACK = [
-  {
-    state: "Maharashtra",
-    name: "Mahatma Phule Backward Class Development Corporation Ltd.",
-    address: "Administrative Building, 4th Floor, Ramkrishna Chemburkar Marg, Chembur, Mumbai - 400071",
-    phone: "022-25220803 / 25220804",
-    website: "https://mpbcdc.maharashtra.gov.in"
-  },
-  {
-    state: "Uttar Pradesh",
-    name: "U.P. Scheduled Castes Finance & Development Corporation Ltd.",
-    address: "TC-46/V-Vibhuti Khand, Gomti Nagar, Lucknow - 226010",
-    phone: "0522-2307684 / 2307683",
-    website: "http://upscfdc.up.gov.in"
-  },
-  {
-    state: "Tamil Nadu",
-    name: "Tamil Nadu Adi Dravidar Housing & Development Corporation (TAHDCO)",
-    address: "No. 31, Cenotaph Road, 2nd Lane, Teynampet, Chennai - 600018",
-    phone: "044-24310214 / 24310215",
-    website: "https://tahdco.tn.gov.in"
-  },
-  {
-    state: "Karnataka",
-    name: "Dr. B.R. Ambedkar Development Corporation Ltd.",
-    address: "9th Floor, Vishveshwaraiah Main Tower, Dr. B.R. Ambedkar Veedhi, Bengaluru - 560001",
-    phone: "080-22864811 / 22864812",
-    website: "https://adcl.karnataka.gov.in"
-  },
-  {
-    state: "Punjab",
-    name: "Punjab Scheduled Castes Land Development & Finance Corporation",
-    address: "SCO 101-103, Sector 17-C, Chandigarh - 160017",
-    phone: "0172-2704381 / 2704383",
-    website: "http://pscldfc.punjab.gov.in"
-  },
-  {
-    state: "Telangana",
-    name: "Telangana Scheduled Castes Cooperative Development Corporation Ltd.",
-    address: "DSS Bhavan, Masab Tank, Hyderabad - 500028",
-    phone: "040-23391624 / 23391625",
-    website: "https://tscorporation.telangana.gov.in"
-  },
-  {
-    state: "Andhra Pradesh",
-    name: "A.P. Scheduled Castes Co-op Finance Corporation Ltd.",
-    address: "VC & MD Office, Tadepalli, Guntur District, Vijayawada - 520001",
-    phone: "0866-2498222",
-    website: "https://apscfc.ap.gov.in"
-  },
-  {
-    state: "Delhi",
-    name: "Delhi SC/ST/OBC/Minorities Development & Finance Corporation (DSFDC)",
-    address: "2-3, Ambedkar Bhawan, Institutional Area, Sector-16, Rohini, New Delhi - 110089",
-    phone: "011-27572701 / 27572702",
-    website: "http://dsfdc.delhi.gov.in"
-  },
-  {
-    state: "West Bengal",
-    name: "West Bengal Scheduled Castes, Scheduled Tribes & OBC Development & Finance Corporation",
-    address: "CF-217/A1, Sector-I, Salt Lake City, Kolkata - 700064",
-    phone: "033-23348121 / 23348122",
-    website: "http://wbscstdfc.gov.in"
-  },
-  {
-    state: "Bihar",
-    name: "Bihar State Scheduled Castes Co-operative Development Corporation Ltd.",
-    address: "Maurya Lok Complex, Block A, 2nd Floor, Patna - 800001",
-    phone: "0612-2215432",
-    website: "http://scwelfare.bih.nic.in"
-  },
-  {
-    state: "Gujarat",
-    name: "Gujarat Scheduled Castes Development Corporation",
-    address: "Block No. 14, 4th Floor, Dr. Jivraj Mehta Bhavan, Gandhinagar - 382010",
-    phone: "079-23253724 / 23253725",
-    website: "https://sje.gujarat.gov.in"
-  },
-  {
-    state: "Madhya Pradesh",
-    name: "M.P. State Scheduled Castes Finance & Development Corporation",
-    address: "Rajiv Gandhi Bhawan, 35, Shyamla Hills, Bhopal - 462002",
-    phone: "0755-2661582 / 2661583",
-    website: "http://scwelfare.mp.gov.in"
+let geoMapInstance = null;
+let geoMarkers = {}; 
+let geoPinsData = [];
+let geoUserMarker = null; 
+let geoUserLocation = null; 
+let geoCurrentRouteLayer = null; 
+let geoMapInitialized = false;
+
+const DEFAULT_MAP_CENTER = { lat: 13.0827, lng: 80.2707 }; // Default India view
+const DEFAULT_MAP_ZOOM = 12;
+
+async function renderGeoLocatorPage() {
+  // 1. Initialize Map if not already created
+  if (!geoMapInitialized) {
+    initGeoMap();
   }
-];
 
-async function renderGeoLocatorPage(searchQuery = '') {
-  const container = document.getElementById('geo-agencies-container');
-  if (!container) return;
+  // Multi-phase invalidateSize to ensure map tiles render properly when tab turns visible
+  [50, 150, 350, 600].forEach(delay => {
+    setTimeout(() => {
+      if (geoMapInstance) {
+        geoMapInstance.invalidateSize();
+      }
+    }, delay);
+  });
 
-  const query = searchQuery.trim();
-  let agencies = [];
+  // 2. Fetch pins from Backend API
+  await loadGeoPins();
+}
 
-  // Display skeleton agency cards while fetching
-  container.innerHTML = Array(6).fill(0).map(() => `
-    <div class="agency-card skeleton-card fade-in-up" style="pointer-events: none;">
-      <div class="skeleton-box skeleton-badge" style="width: 100px; margin-bottom: 12px;"></div>
-      <div class="skeleton-box skeleton-title" style="width: 80%; height: 22px; margin-bottom: 16px;"></div>
-      <div class="skeleton-box skeleton-text" style="width: 90%; height: 16px; margin-bottom: 8px;"></div>
-      <div class="skeleton-box skeleton-text" style="width: 70%; height: 16px; margin-bottom: 8px;"></div>
-      <div class="skeleton-box skeleton-text" style="width: 50%; height: 16px;"></div>
-    </div>
-  `).join('');
+async function loadGeoPins(lat = null, lng = null) {
+  let endpoint = '/geo/pins';
+  if (lat !== null && lng !== null) {
+    endpoint += `?lat=${lat}&lng=${lng}`;
+  }
+
+  setGeoLoading(true);
 
   try {
-    const url = query ? `/geo/agencies?search=${encodeURIComponent(query)}` : '/geo/agencies';
-    const res = await apiRequest(url, { method: 'GET' });
-    if (res && res.agencies) {
-      agencies = res.agencies;
+    const res = await apiRequest(endpoint, { method: 'GET' });
+    if (res && Array.isArray(res)) {
+      geoPinsData = res;
+      renderGeoMarkers();
+      updateGeoPinsList();
+    } else {
+      showGeoNotification("Failed to load channel agency locations.", true);
     }
   } catch (err) {
-    const qLower = query.toLowerCase();
-    agencies = SCA_DIRECTORY_FALLBACK.filter(item =>
-      item.state.toLowerCase().includes(qLower) ||
-      item.name.toLowerCase().includes(qLower) ||
-      item.address.toLowerCase().includes(qLower)
-    );
+    console.error("Geo pins error:", err);
+    showGeoNotification(err.message || "Error connecting to location server.", true);
+  } finally {
+    setGeoLoading(false);
   }
+}
 
-  if (agencies.length === 0) {
-    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No State Channelising Agency offices found matching search criteria.</div>';
+function initGeoMap() {
+  const mapContainer = document.getElementById("map-container");
+  if (!mapContainer) return;
+
+  if (typeof L === "undefined") {
+    showGeoNotification("Leaflet Map SDK failed to load.", true);
     return;
   }
 
-  container.innerHTML = agencies.map(item => `
-    <div class="agency-card fade-in-up">
-      <span class="agency-state-badge">${item.state}</span>
-      <h3 class="agency-name">${item.name}</h3>
-      <div class="agency-contact-info">
-        <div><strong>Address:</strong> ${item.address}</div>
-        <div><strong>Helpline Phone:</strong> ${item.phone}</div>
-        <div><strong>Official Portal:</strong> <a href="${item.website}" target="_blank" style="color: var(--primary-600); text-decoration: underline;">Visit Portal</a></div>
+  try {
+    geoMapInstance = L.map("map-container", {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([DEFAULT_MAP_CENTER.lat, DEFAULT_MAP_CENTER.lng], DEFAULT_MAP_ZOOM);
+
+    // Highly reliable CartoDB Voyager map tiles
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(geoMapInstance);
+
+    L.control.zoom({ position: "topright" }).addTo(geoMapInstance);
+
+    setupGeoEventListeners();
+    geoMapInitialized = true;
+
+    // Recalibrate tile positions
+    setTimeout(() => {
+      if (geoMapInstance) geoMapInstance.invalidateSize();
+    }, 150);
+
+  } catch (err) {
+    console.error("Leaflet init error:", err);
+  }
+}
+
+function setupGeoEventListeners() {
+  const searchForm = document.getElementById("search-form");
+  const myLocationBtn = document.getElementById("my-location-btn");
+  const clearRouteBtn = document.getElementById("clear-route-btn");
+
+  if (searchForm) {
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("search-input");
+      if (input && input.value.trim()) {
+        searchGeoLocation(input.value.trim());
+      }
+    });
+  }
+
+  if (myLocationBtn) {
+    myLocationBtn.addEventListener("click", getGeoUserLocation);
+  }
+
+  if (clearRouteBtn) {
+    clearRouteBtn.addEventListener("click", clearGeoRoute);
+  }
+}
+
+function renderGeoMarkers() {
+  if (!geoMapInstance) return;
+
+  geoPinsData.forEach((pin) => {
+    if (!geoMarkers[pin.id]) {
+      createGeoMarker(pin);
+    }
+  });
+}
+
+function createGeoMarker(pin) {
+  const markerIcon = L.divIcon({
+    html: `<div style="background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); width: 28px; height: 28px; border-radius: 50%; border: 3px solid #FFFFFF; box-shadow: 0 4px 14px rgba(79,70,229,0.45); display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 12px; font-weight: 700;">📍</div>`,
+    className: "",
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+  });
+
+  const marker = L.marker([pin.lat, pin.lng], { icon: markerIcon }).addTo(geoMapInstance);
+
+  const tooltipContent = `
+    <div style="font-weight: 700; font-size: 13px; color: #0F172A;">${pin.name}</div>
+    <div style="font-size: 11px; color: #64748B;">${pin.description || ''}</div>
+  `;
+
+  marker.bindTooltip(tooltipContent, {
+    direction: "top",
+    offset: [0, -10],
+    opacity: 0.95,
+    sticky: true
+  });
+
+  const popupContent = `
+    <div class="popup-content">
+      <h4>${pin.name}</h4>
+      <p>${pin.description || ''}</p>
+      ${pin.phone ? `<p style="font-size: 0.8rem; margin-bottom: 8px;"><strong>Phone:</strong> ${pin.phone}</p>` : ''}
+      <div class="popup-actions">
+        <button class="popup-btn" onclick="navigateToPin('${pin.id}')">Navigate</button>
       </div>
     </div>
-  `).join('');
+  `;
+
+  marker.bindPopup(popupContent);
+  geoMarkers[pin.id] = marker;
+}
+
+function updateGeoPinsList() {
+  const listEl = document.getElementById("pins-list");
+  const countEl = document.getElementById("pin-count");
+  if (!listEl) return;
+
+  listEl.innerHTML = "";
+
+  const displayPins = geoPinsData.slice(0, 5);
+  if (countEl) countEl.textContent = displayPins.length;
+
+  displayPins.forEach((pin) => {
+    const li = document.createElement("li");
+    li.className = "pin-item";
+
+    let distHtml = "";
+    if (pin.distance !== null && pin.distance !== undefined) {
+      distHtml = `<span class="pin-dist">${pin.distance.toFixed(1)} km</span>`;
+    }
+
+    li.innerHTML = `
+      <div class="pin-header">
+        <span class="pin-title">${pin.name}</span>
+        ${distHtml}
+      </div>
+      <div class="pin-actions">
+        <button class="pin-btn" onclick="focusGeoPin('${pin.id}')">View</button>
+        <button class="pin-btn nav" onclick="navigateToPin('${pin.id}')">Navigate</button>
+      </div>
+    `;
+    listEl.appendChild(li);
+  });
+}
+
+window.focusGeoPin = function (pinId) {
+  const pin = geoPinsData.find((p) => p.id === pinId);
+  if (pin && geoMarkers[pinId] && geoMapInstance) {
+    geoMapInstance.flyTo([pin.lat, pin.lng], 15);
+    geoMarkers[pinId].openPopup();
+  }
+};
+
+window.navigateToPin = async function (pinId) {
+  if (!geoUserLocation) {
+    showGeoNotification("Fetching your current location for navigation...");
+    if (!navigator.geolocation) {
+      showGeoNotification("Geolocation is not supported by your browser.", true);
+      return;
+    }
+
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoLoading(false);
+        geoUserLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        updateGeoUserMarker();
+        calculateGeoRouteTo(pinId);
+      },
+      (err) => {
+        setGeoLoading(false);
+        showGeoNotification("Failed to get your location for navigation.", true);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+    return;
+  }
+
+  calculateGeoRouteTo(pinId);
+};
+
+async function calculateGeoRouteTo(pinId) {
+  const destination = geoPinsData.find((p) => p.id === pinId);
+  if (!destination || !geoUserLocation) return;
+
+  setGeoLoading(true);
+  clearGeoRoute();
+
+  try {
+    const endpoint = `/geo/route?start_lng=${geoUserLocation.lng}&start_lat=${geoUserLocation.lat}&end_lng=${destination.lng}&end_lat=${destination.lat}`;
+    const data = await apiRequest(endpoint, { method: 'GET' });
+
+    if (data && data.code === "Ok" && data.routes && data.routes.length > 0) {
+      const route = data.routes[0];
+      const coordinates = route.geometry.coordinates.map((coord) => [coord[1], coord[0]]);
+
+      geoCurrentRouteLayer = L.polyline(coordinates, {
+        color: "#4F46E5",
+        weight: 6,
+        opacity: 0.85,
+        lineJoin: "round",
+      }).addTo(geoMapInstance);
+
+      geoMapInstance.fitBounds(geoCurrentRouteLayer.getBounds(), { padding: [50, 50] });
+
+      const distKm = (route.distance / 1000).toFixed(1);
+      const timeMin = Math.round(route.duration / 60);
+
+      const navInfoPanel = document.getElementById("nav-info-panel");
+      const routeDetailsEl = document.getElementById("route-details");
+
+      if (routeDetailsEl) {
+        routeDetailsEl.innerHTML = `
+          <div><strong>Destination:</strong> ${destination.name}</div>
+          <div><strong>Distance:</strong> ${distKm} km</div>
+          <div><strong>Est. Driving Time:</strong> ${timeMin} mins</div>
+        `;
+      }
+      if (navInfoPanel) navInfoPanel.classList.remove("hidden");
+    } else {
+      showGeoNotification("Unable to calculate driving route.", true);
+    }
+  } catch (err) {
+    console.error("Route calculation error:", err);
+    showGeoNotification("Routing service error.", true);
+  } finally {
+    setGeoLoading(false);
+  }
+}
+
+function clearGeoRoute() {
+  if (geoCurrentRouteLayer && geoMapInstance) {
+    geoMapInstance.removeLayer(geoCurrentRouteLayer);
+    geoCurrentRouteLayer = null;
+  }
+  const navInfoPanel = document.getElementById("nav-info-panel");
+  const routeDetailsEl = document.getElementById("route-details");
+  if (navInfoPanel) navInfoPanel.classList.add("hidden");
+  if (routeDetailsEl) routeDetailsEl.innerHTML = "";
+}
+
+async function searchGeoLocation(query) {
+  setGeoLoading(true);
+  try {
+    const endpoint = `/geo/search?q=${encodeURIComponent(query)}`;
+    const data = await apiRequest(endpoint, { method: 'GET' });
+
+    if (data && Array.isArray(data) && data.length > 0) {
+      const result = data[0];
+      const lat = parseFloat(result.lat);
+      const lng = parseFloat(result.lon);
+
+      if (geoMapInstance) {
+        geoMapInstance.flyTo([lat, lng], 14);
+        showGeoNotification(`Centered map on ${result.display_name.split(',')[0]}`);
+      }
+    } else {
+      showGeoNotification("No location results found for search query.", true);
+    }
+  } catch (err) {
+    console.error("Search error:", err);
+    showGeoNotification("Error performing location search.", true);
+  } finally {
+    setGeoLoading(false);
+  }
+}
+
+function getGeoUserLocation() {
+  if (!navigator.geolocation) {
+    showGeoNotification("Geolocation is not supported by your browser.", true);
+    return;
+  }
+
+  setGeoLoading(true);
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      setGeoLoading(false);
+      geoUserLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+
+      updateGeoUserMarker();
+
+      if (geoMapInstance) {
+        geoMapInstance.flyTo([geoUserLocation.lat, geoUserLocation.lng], 14);
+      }
+
+      await loadGeoPins(geoUserLocation.lat, geoUserLocation.lng);
+      showGeoNotification("Located your position!");
+    },
+    (error) => {
+      setGeoLoading(false);
+      let msg = "Unable to retrieve position.";
+      if (error.code === 1) msg = "Location permission denied.";
+      else if (error.code === 2) msg = "Location position unavailable.";
+      else if (error.code === 3) msg = "Location request timed out.";
+      showGeoNotification(msg, true);
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
+function updateGeoUserMarker() {
+  if (!geoUserLocation || !geoMapInstance) return;
+
+  if (geoUserMarker) {
+    geoMapInstance.removeLayer(geoUserMarker);
+  }
+
+  const userIcon = L.divIcon({
+    html: `<div style="background-color: #10B981; width: 22px; height: 22px; border-radius: 50%; border: 3px solid #FFFFFF; box-shadow: 0 0 12px rgba(16,185,129,0.9);"></div>`,
+    className: "",
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+  });
+
+  geoUserMarker = L.marker([geoUserLocation.lat, geoUserLocation.lng], { icon: userIcon })
+    .addTo(geoMapInstance)
+    .bindPopup("<b>Your Current Position</b>");
+}
+
+function showGeoNotification(msg, isError = false) {
+  const notifEl = document.getElementById("notification-message");
+  if (!notifEl) return;
+  notifEl.textContent = msg;
+  notifEl.style.backgroundColor = isError ? "rgba(220, 38, 38, 0.95)" : "rgba(79, 70, 229, 0.95)";
+  notifEl.classList.remove("hidden");
+  setTimeout(() => notifEl.classList.add("hidden"), 4000);
+}
+
+function setGeoLoading(isLoading) {
+  const overlay = document.getElementById("loading-overlay");
+  if (!overlay) return;
+  if (isLoading) overlay.classList.remove("hidden");
+  else overlay.classList.add("hidden");
 }

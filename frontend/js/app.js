@@ -34,14 +34,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (navAvatar && userObj.name) navAvatar.innerText = userObj.name.charAt(0).toUpperCase();
   }
 
+  // Restore sidebar state if previously collapsed
+  if (sessionStorage.getItem('yojana_sidebar_collapsed') === 'true') {
+    const layout = document.querySelector('.app-layout');
+    if (layout) layout.classList.add('sidebar-collapsed');
+  }
+
   // Pre-load User Profile
   loadUserProfile();
 
   // Listen to browser URL hash changes for separate endpoint navigation
   window.addEventListener('hashchange', handleHashRoute);
 
+  // Resize listener to keep sliding pill aligned
+  window.addEventListener('resize', () => {
+    updateSidebarPill();
+  });
+
   // Initialize Route from URL hash or default to #/schemes
   handleHashRoute();
+
+  // Initial calculation of sidebar active pill positioning
+  setTimeout(() => {
+    updateSidebarPill();
+  }, 50);
 });
 
 function handleHashRoute() {
@@ -145,8 +161,34 @@ function switchView(viewId, params = {}, updateHash = true) {
     document.getElementById('nav-page-title').innerText = 'Recommendation Results';
   }
 
+  // Smoothly move the single active glass pill to the newly active nav item
+  updateSidebarPill();
+
   // Scroll smoothly to top of main container on view switch
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateSidebarPill(targetNavEl) {
+  const pill = document.getElementById('sidebar-active-pill');
+  const navContainer = document.querySelector('.sidebar-nav');
+  if (!pill || !navContainer) return;
+
+  const activeItem = targetNavEl || navContainer.querySelector('.nav-item.active');
+  if (!activeItem) {
+    pill.classList.remove('visible');
+    return;
+  }
+
+  // Calculate position relative to .sidebar-nav container
+  const topOffset = activeItem.offsetTop;
+  const leftOffset = activeItem.offsetLeft;
+  const height = activeItem.offsetHeight;
+  const width = activeItem.offsetWidth;
+
+  pill.style.transform = `translate3d(${leftOffset}px, ${topOffset}px, 0)`;
+  pill.style.height = `${height}px`;
+  pill.style.width = `${width}px`;
+  pill.classList.add('visible');
 }
 
 function handleLogout() {
@@ -156,4 +198,20 @@ function handleLogout() {
   }
   clearAuthSession();
   window.location.replace('login.html');
+}
+
+function toggleSidebar() {
+  const layout = document.querySelector('.app-layout');
+  if (!layout) return;
+  const isCollapsed = layout.classList.toggle('sidebar-collapsed');
+  sessionStorage.setItem('yojana_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+
+  [50, 150, 350, 500].forEach(delay => {
+    setTimeout(() => {
+      updateSidebarPill();
+      if (typeof window.geoMapInstance !== 'undefined' && window.geoMapInstance) {
+        window.geoMapInstance.invalidateSize();
+      }
+    }, delay);
+  });
 }

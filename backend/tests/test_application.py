@@ -145,3 +145,10 @@ def test_geo_locator_api():
     sdata = search_res.json()
     assert sdata["total"] > 0
     assert any(a["state"] == "Maharashtra" for a in sdata["agencies"])
+
+    pins_res = client.get("/api/geo/pins?lat=13.0827&lng=80.2707")
+    assert pins_res.status_code == 200
+    pins_data = pins_res.json()
+    assert len(pins_data) >= 5
+    assert pins_data[0]["distance"] is not None
+

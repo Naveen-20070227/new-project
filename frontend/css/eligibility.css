@@ -132,3 +132,14 @@
   font-size: 0.82rem;
   color: var(--text-muted);
 }
+
+@media (max-width: 640px) {
+  .profile-preload-card,
+  .eligibility-card {
+    padding: 18px 14px;
+  }
+
+  .form-section-title {
+    font-size: 0.95rem;
+  }
+}
